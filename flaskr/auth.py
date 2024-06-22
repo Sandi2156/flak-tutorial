@@ -87,3 +87,15 @@ def login():
 def logout():
     session.clear()
     return redirect(url_for('index'))
+
+
+def login_required(view):
+    """This function is used to check whether user is logged in or not"""
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if g.user is None:
+            return redirect(url_for("auth.login"))
+        
+        return view(**kwargs)
+    
+    return wrapped_view
