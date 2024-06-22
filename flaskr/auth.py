@@ -15,6 +15,16 @@ from werkzeug.security import check_password_hash, generate_password_hash
 associated with the blueprint"""
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
+@bp.before_request
+def load_logged_in_user():
+    user_id = session.get('user_id')
+    
+    if user_id is None:
+        g.user = None
+    else:
+        g.user = get_db().execute("SELECT * from user WHERE id = ?", (user_id,)).fetchone()
+
+
 @bp.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -55,8 +65,8 @@ def login():
         error = None
         
         user = db.execute(
-            "SELECT * from user WHERE username = ?", (username)
-        )
+            "SELECT * from user WHERE username = ?", (username,)
+        ).fetchone()
         
         if user is None:
             error = "User does not exist"
