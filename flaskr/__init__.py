@@ -29,4 +29,10 @@ def create_app(test_config=None):
     from . import auth
     app.register_blueprint(auth.bp)
     
+    """Registering the blog Blueprint. As the blog Blueprint doesn't have url prefix so the index view will be at /"""
+    from . import blog
+    app.register_blueprint(blog.bp)
+    """TODO: Understand this"""
+    app.add_url_rule("/", endpoint="index")
+    
     return app
